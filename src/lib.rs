@@ -29,19 +29,19 @@ pub struct Character {
 
 impl Character {
     // Method to create a new character
-    pub fn new() -> Character {
+    pub fn new() -> Self {
+        Default::default()
+    }
+}
+
+impl Default for Character {
+    fn default() -> Self {
         Character {
             race: Race::Human,
             class: Class::Warrior,
             ability_scores: Vec::new(),
             personality_traits: Vec::new(),
         }
-    }
-}
-
-impl Default for Character {
-    fn default() -> Self {
-        Character::new()
     }
 }
 
