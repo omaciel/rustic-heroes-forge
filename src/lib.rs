@@ -1,30 +1,44 @@
 // Enumerations for a Character
 
+use std::collections::HashMap;
 use std::error::Error;
 use std::io;
+
+use strum::IntoEnumIterator;
+
+mod characters;
+
+pub const BAR: [&str; 6] = [
+    "Strength",
+    "Dexterity", 
+    "Constitution", 
+    "Intelligence", 
+    "Wisdom", 
+    "Charisma",
+];
 
 
 #[derive(Debug)]
 pub enum Race {
+    Centaur,
+    Changeling,
     Dwarf,
     Elf,
+    Fairy,
+    Gnome,
+    Goblin,
     Human,
+    Orc,
+    Shifter,
+    Zombie,
 }
-
-#[derive(Debug)]
-pub enum Class {
-    Rogue,
-    Spellcaster,
-    Warrior,
-}
-
 
 // Struct to hold character traits
+
 pub struct Character {
     pub race: Race,
-    pub class: Class,
-    pub ability_scores: Vec<i32>,
-    pub personality_traits: Vec<String>,
+    pub class: characters::Class,
+    pub abilities: HashMap<String, i32>,
 }
 
 impl Character {
@@ -36,11 +50,18 @@ impl Character {
 
 impl Default for Character {
     fn default() -> Self {
+        let abilities: HashMap<String, i32> = HashMap::from([
+            ("Strength".to_string(), 15),
+            ("Dexterity".to_string(), 14),
+            ("Constitution".to_string(), 13),
+            ("Inteligence".to_string(), 12),
+            ("Wisdom".to_string(), 10),
+            ("Charisma".to_string(), 8),
+        ]);
         Character {
             race: Race::Human,
-            class: Class::Warrior,
-            ability_scores: Vec::new(),
-            personality_traits: Vec::new(),
+            class: characters::Class::Paladin,
+            abilities,
         }
     }
 }
@@ -65,36 +86,36 @@ pub fn run() -> Result<Character, Box<dyn Error>> {
 
     // Prompt for class
     println!("Choose a class:");
-    println!("1. Warrior");
+    println!("1. Paladin");
     println!("2. Spellcaster");
     println!("3. Rogue");
     let mut class_choice = String::new();
     io::stdin().read_line(&mut class_choice)?;
     match class_choice.trim().parse() {
-        Ok(1) => character.class = Class::Warrior,
-        Ok(2) => character.class = Class::Spellcaster,
-        Ok(3) => character.class = Class::Rogue,
-        _ => println!("Invalid choice. Defaulting to Warrior."),
+        Ok(1) => character.class = characters::Class::Paladin,
+        Ok(2) => character.class = characters::Class::Sourcerer,
+        Ok(3) => character.class = characters::Class::Rogue,
+        _ => println!("Invalid choice. Defaulting to Paladin."),
     }
 
-    // Prompt for ability scores
-    println!("Enter ability scores (separated by spaces):");
-    let mut ability_scores = String::new();
-    io::stdin().read_line(&mut ability_scores)?;
-    let scores: Vec<i32> = ability_scores
-        .split_whitespace()
-        .map(|s| s.parse().unwrap_or(0))
-        .collect();
-    character.ability_scores = scores;
+    // Prompt for abilities
+    let mut idx: i32 = 0;
+    for ab in characters::Class::iter() {
+    
+        idx += 1;
+        println!("{}. {:?}", idx.to_string(), ab)
+    }
 
-    // Prompt for personality traits
-    println!("Enter personality traits (separated by commas):");
-    let mut personality_traits = String::new();
-    io::stdin().read_line(&mut personality_traits)?;
-    character.personality_traits = personality_traits
-        .split(',')
-        .map(|s| s.trim().to_string())
-        .collect();
+    let mut abilities: HashMap<String, i32> = HashMap::new();
+    for ab in BAR {
+        let mut ability_score: String = String::new();
+        println!("Enter ability scores for {}:", ab.to_string());
+        io::stdin().read_line(&mut ability_score)?;
+        let score: i32 = ability_score.trim().parse().unwrap();
+        println!("{}: {}", ab.to_string(), score);
+        abilities.insert(ab.to_string(), score);
+    }
+    character.abilities = abilities;
 
     Ok(character)
 }
@@ -107,18 +128,27 @@ mod tests {
     fn test_default_character() {
         let character = Character::new();
         assert!(matches!(character.race, Race::Human));
-        assert!(matches!(character.class, Class::Warrior));
+        assert!(matches!(character.class, characters::Class::Paladin));
+    }
+
+    #[test]
+    fn test_default_abilities() {
+        let character = Character::new();
+        assert!(matches!(character.race, Race::Human));
+        assert!(matches!(character.class, characters::Class::Paladin));
     }
 
     #[test]
     fn test_set_race() {
+        let abilities: HashMap<String, i32> = HashMap::from([
+            ("Strength".to_string(), 15),
+        ]);
         let character: Character = Character{
             race: Race::Dwarf, 
-            class: Class::Spellcaster, 
-            ability_scores: Vec::new(), 
-            personality_traits: Vec::new() 
+            class: characters::Class::Sourcerer, 
+            abilities: abilities,
         };
         assert!(matches!(character.race, Race::Dwarf));
-        assert!(matches!(character.class, Class::Spellcaster));
+        assert!(matches!(character.class, characters::Class::Sourcerer));
     }
 }

@@ -8,8 +8,7 @@ fn main() {
             println!("Character created:");
             println!("Race: {:?}", character.race);
             println!("Class: {:?}", character.class);
-            println!("Ability Scores: {:?}", character.ability_scores);
-            println!("Personality Traits: {:?}", character.personality_traits);
+            println!("Abilities: {:#?}", character.abilities);
         },
         Err(e) => {
             eprintln!("Application error: {e}");
