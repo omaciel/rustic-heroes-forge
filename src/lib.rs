@@ -66,6 +66,17 @@ impl Default for Character {
     }
 }
 
+// Function to prompt user for a choice
+fn prompt() -> i32 {
+    let mut choice: String = String::new();
+    io::stdin()
+        .read_line(&mut choice)
+        .expect("Could not parse your choice");
+
+    let input: i32 =choice.trim().parse().expect("You provided an invalid input");
+    input
+}
+
 // Function to prompt the user for character traits
 pub fn run() -> Result<Character, Box<dyn Error>> {
     let mut character = Character::new();
@@ -75,12 +86,11 @@ pub fn run() -> Result<Character, Box<dyn Error>> {
     println!("1. Human");
     println!("2. Elf");
     println!("3. Dwarf");
-    let mut race_choice = String::new();
-    io::stdin().read_line(&mut race_choice)?;
-    match race_choice.trim().parse() {
-        Ok(1) => character.race = Race::Human,
-        Ok(2) => character.race = Race::Elf,
-        Ok(3) => character.race = Race::Dwarf,
+    
+    match prompt() {
+        1 => character.race = Race::Human,
+        2 => character.race = Race::Elf,
+        3 => character.race = Race::Dwarf,
         _ => println!("Invalid choice. Defaulting to Human."),
     }
 
@@ -89,12 +99,11 @@ pub fn run() -> Result<Character, Box<dyn Error>> {
     println!("1. Paladin");
     println!("2. Spellcaster");
     println!("3. Rogue");
-    let mut class_choice = String::new();
-    io::stdin().read_line(&mut class_choice)?;
-    match class_choice.trim().parse() {
-        Ok(1) => character.class = characters::Class::Paladin,
-        Ok(2) => character.class = characters::Class::Sourcerer,
-        Ok(3) => character.class = characters::Class::Rogue,
+    
+    match prompt() {
+        1 => character.class = characters::Class::Paladin,
+        2 => character.class = characters::Class::Sourcerer,
+        3 => character.class = characters::Class::Rogue,
         _ => println!("Invalid choice. Defaulting to Paladin."),
     }
 
